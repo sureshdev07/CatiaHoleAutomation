@@ -211,14 +211,20 @@ namespace CatiaHoleAutomation
         /// <summary>
         /// Validates whether any holes intersect/overlap in 2D.
         /// Intersect rule: distance between centers <= r1 + r2 (+ optional clearance).
+        /// If intersections found, highlights the conflicting rows in the DataGridView.
         /// </summary>
         private bool ValidateNoHoleIntersections(string csvPath, double clearance = 0)
         {
+            // Clear any previous highlighting
+            ClearGridHighlighting();
+
             if (!TryReadHolesFromCsv(csvPath, out var holes, out var error))
             {
                 MessageBox.Show(error, "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
+
+            var intersectingSlNos = new System.Collections.Generic.HashSet<int>();
 
             for (var i = 0; i < holes.Count; i++)
             {
@@ -237,25 +243,67 @@ namespace CatiaHoleAutomation
                     // If centers are closer than the sum of radii => circles overlap (holes intersect)
                     if (distSq <= minDistSq)
                     {
-                        var dist = Math.Sqrt(distSq);
-                        MessageBox.Show(
-                            $"Hole intersection detected:\n" +
-                            $"- SlNo {a.SlNo} and SlNo {b.SlNo}\n" +
-                            $"- Center distance = {dist:F3}\n" +
-                            $"- Required min distance = {minDist:F3}",
-                            "Intersection Found",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Error);
-
-                        return false;
+                        intersectingSlNos.Add(a.SlNo);
+                        intersectingSlNos.Add(b.SlNo);
                     }
                 }
+            }
+
+            if (intersectingSlNos.Count > 0)
+            {
+                HighlightIntersectingRows(intersectingSlNos);
+
+                MessageBox.Show(
+                    $"Hole intersections detected!\n\n" +
+                    $"Conflicting holes (SlNo): {string.Join(", ", intersectingSlNos)}\n\n" +
+                    $"Intersecting rows are highlighted in RED in the grid.",
+                    "Intersection Found",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+
+                return false;
             }
 
             return true;
         }
 
-        private void btnExecute_Click(object sender, EventArgs e)
+        private void ClearGridHighlighting()
+        {
+            foreach (DataGridViewRow row in dgvHoleData.Rows)
+            {
+                if (row.IsNewRow)
+                {
+                    continue;
+                }
+
+                row.DefaultCellStyle.BackColor = System.Drawing.Color.White;
+                row.DefaultCellStyle.ForeColor = System.Drawing.Color.Black;
+            }
+        }
+
+        private void HighlightIntersectingRows(System.Collections.Generic.HashSet<int> slNos)
+        {
+            foreach (DataGridViewRow row in dgvHoleData.Rows)
+            {
+                if (row.IsNewRow)
+                {
+                    continue;
+                }
+
+                // Column 0 is SlNo
+                var slNoValue = row.Cells[0].Value;
+                if (slNoValue != null && int.TryParse(slNoValue.ToString(), out var slNo))
+                {
+                    if (slNos.Contains(slNo))
+                    {
+                        row.DefaultCellStyle.BackColor = System.Drawing.Color.LightCoral;
+                        row.DefaultCellStyle.ForeColor = System.Drawing.Color.Black;
+                    }
+                }
+            }
+        }
+
+        private void btnHoleAnalyzer_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(CsvFilePath))
             {
@@ -263,15 +311,71 @@ namespace CatiaHoleAutomation
                 return;
             }
 
-            // Validate hole layout from CSV before proceeding.
-            if (!ValidateNoHoleIntersections(CsvFilePath, clearance: 0))
+            // Run intersection validation and highlight conflicts
+            if (ValidateNoHoleIntersections(CsvFilePath, clearance: 0))
             {
-                return;
+                MessageBox.Show(
+                    "✓ All holes validated successfully!\n\nNo intersections detected.",
+                    "Validation Success",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
             }
-
-            MessageBox.Show("All holes validated. No intersections detected!", "Validation Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-            _catiaConnector.OpenPart(CATPartFilePath);
         }
+
+        private void btnExecute_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(CsvFilePath))
+                {
+                    MessageBox.Show("Please select a CSV file first.", "Missing CSV", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Open the part if path is provided
+                if (!string.IsNullOrWhiteSpace(CATPartFilePath))
+                {
+                    _catiaConnector.OpenPart(CATPartFilePath);
+                }
+                else
+                {
+                    // Use active part
+                    _catiaConnector.GetActivePart();
+                }
+
+                // Prompt user to select a face in CATIA
+                MessageBox.Show(
+                    "Please select a planar face in CATIA where holes will be created.\n\n" +
+                    "Note: X and Y coordinates from CSV must be in the part's absolute coordinate system.",
+                    "Face Selection",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+
+                var selectedFace = _catiaConnector.PromptUserToSelectFace();
+
+                // Read hole data from CSV
+                var holes = CsvReader.ReadHoleData(CsvFilePath);
+
+                // Create holes on the selected face
+                var holeCreator = new HoleCreator(_catiaConnector);
+                holeCreator.CreateHolesOnFace(selectedFace, holes);
+
+                MessageBox.Show(
+                    $"Successfully created {holes.Count} holes on the selected face!",
+                    "Success",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Error creating holes:\n{ex.Message}",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+        }
+
+   
     }
 }

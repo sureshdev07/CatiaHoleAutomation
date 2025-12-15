@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.tb_BrowsePart = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.btnSelectPart = new System.Windows.Forms.Button();
@@ -44,6 +45,8 @@
             this.Depth = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Hole_Type = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.btnHoleAnalyzer = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dgvHoleData)).BeginInit();
             this.SuspendLayout();
             // 
@@ -65,12 +68,14 @@
             // 
             // btnSelectPart
             // 
-            this.btnSelectPart.Location = new System.Drawing.Point(518, 62);
+            this.btnSelectPart.BackColor = System.Drawing.Color.Transparent;
+            this.btnSelectPart.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnSelectPart.BackgroundImage")));
+            this.btnSelectPart.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.btnSelectPart.Location = new System.Drawing.Point(518, 59);
             this.btnSelectPart.Name = "btnSelectPart";
-            this.btnSelectPart.Size = new System.Drawing.Size(75, 23);
+            this.btnSelectPart.Size = new System.Drawing.Size(32, 29);
             this.btnSelectPart.TabIndex = 2;
-            this.btnSelectPart.Text = "browse";
-            this.btnSelectPart.UseVisualStyleBackColor = true;
+            this.btnSelectPart.UseVisualStyleBackColor = false;
             this.btnSelectPart.Click += new System.EventHandler(this.btnSelectPart_Click);
             // 
             // label2
@@ -101,21 +106,23 @@
             // 
             // btnBrowseCsv
             // 
+            this.btnBrowseCsv.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnBrowseCsv.BackgroundImage")));
+            this.btnBrowseCsv.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.btnBrowseCsv.Location = new System.Drawing.Point(520, 112);
             this.btnBrowseCsv.Name = "btnBrowseCsv";
-            this.btnBrowseCsv.Size = new System.Drawing.Size(75, 23);
+            this.btnBrowseCsv.Size = new System.Drawing.Size(30, 29);
             this.btnBrowseCsv.TabIndex = 6;
-            this.btnBrowseCsv.Text = "browse";
             this.btnBrowseCsv.UseVisualStyleBackColor = true;
             this.btnBrowseCsv.Click += new System.EventHandler(this.btnBrowseCsv_Click);
             // 
             // btnExecute
             // 
-            this.btnExecute.Location = new System.Drawing.Point(686, 209);
+            this.btnExecute.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnExecute.BackgroundImage")));
+            this.btnExecute.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.btnExecute.Location = new System.Drawing.Point(682, 279);
             this.btnExecute.Name = "btnExecute";
-            this.btnExecute.Size = new System.Drawing.Size(75, 23);
+            this.btnExecute.Size = new System.Drawing.Size(75, 50);
             this.btnExecute.TabIndex = 7;
-            this.btnExecute.Text = "Execute";
             this.btnExecute.UseVisualStyleBackColor = true;
             this.btnExecute.Click += new System.EventHandler(this.btnExecute_Click);
             // 
@@ -166,18 +173,40 @@
             // 
             // btnHoleAnalyzer
             // 
-            this.btnHoleAnalyzer.Location = new System.Drawing.Point(686, 280);
+            this.btnHoleAnalyzer.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnHoleAnalyzer.BackgroundImage")));
+            this.btnHoleAnalyzer.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.btnHoleAnalyzer.Location = new System.Drawing.Point(686, 187);
             this.btnHoleAnalyzer.Name = "btnHoleAnalyzer";
-            this.btnHoleAnalyzer.Size = new System.Drawing.Size(75, 44);
+            this.btnHoleAnalyzer.Size = new System.Drawing.Size(71, 47);
             this.btnHoleAnalyzer.TabIndex = 9;
-            this.btnHoleAnalyzer.Text = "Hole Analyzer";
             this.btnHoleAnalyzer.UseVisualStyleBackColor = true;
+            this.btnHoleAnalyzer.Click += new System.EventHandler(this.btnHoleAnalyzer_Click);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(679, 168);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(72, 13);
+            this.label4.TabIndex = 10;
+            this.label4.Text = "Hole Analyzer";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(679, 263);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(81, 13);
+            this.label5.TabIndex = 11;
+            this.label5.Text = "Generate Holes";
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(795, 622);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.btnHoleAnalyzer);
             this.Controls.Add(this.dgvHoleData);
             this.Controls.Add(this.btnExecute);
@@ -214,6 +243,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Depth;
         private System.Windows.Forms.DataGridViewTextBoxColumn Hole_Type;
         private System.Windows.Forms.Button btnHoleAnalyzer;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label5;
     }
 }
 
