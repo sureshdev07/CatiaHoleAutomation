@@ -29,5 +29,10 @@ namespace CatiaHoleAutomation.Services
                 throw new Exception("CATIA connection failed: " + ex.Message);
             }
         }
+
+        public void OpenPart(string partFilePath)
+        {
+            CatiaApp.Documents.Open(partFilePath);
+        }
     }
 }
