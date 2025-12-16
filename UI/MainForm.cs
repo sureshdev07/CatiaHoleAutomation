@@ -376,6 +376,20 @@ namespace CatiaHoleAutomation
             }
         }
 
-   
+        private void btnClear_Click(object sender, EventArgs e)
+        {
+            // Clear CSV selection
+            CsvFilePath = null;
+            tbrowseCSV.Text = string.Empty;
+
+            // Clear grid + any highlighting
+            dgvHoleData.Rows.Clear();
+            ClearGridHighlighting();
+        }
+
+        private void btnClose_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
     }
 }
